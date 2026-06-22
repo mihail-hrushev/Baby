@@ -1,18 +1,15 @@
 import Point from '../Math/Point';
 import _meshBuilder from './MeshBuilder';
 
-export default class Beam {
+export default class PolyBeam {
 
     /**
      * 
-     * @param {Vector} start 
-     * @param {Vector} end 
+     * @param {Point[]} Points 
      */
-    constructor(start, end){
-    
+    constructor(points){    
+        this.points = points;
         this.name = "Beam";
-        this.start = start; 
-        this.end = end; 
         this.profileString = "H*5*5*1*1"
     }
 
@@ -20,7 +17,7 @@ export default class Beam {
 
     insert(){
         
-    _meshBuilder.CustomMesh(this);
+        _meshBuilder.PolyBeamToMesh(this);
     }
 
     /**
@@ -40,8 +37,18 @@ export default class Beam {
         return result; 
     }
 
+    /**
+     * 
+     * @param {(start:Point, end:Point)=>void} func 
+     */
+    ForeEachSection(func){
+        for(let i = 0 ; i< this.points.length-1; i++){
+            func(this.points[i], this.points[i+1])
+        }
+
+    }
     
-    static genProfileH(width, height, flangeThick, webThick){
+    genProfileH(width, height, flangeThick, webThick){
     
             const hwidth = width/2;
             const hheight = height/2;

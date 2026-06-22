@@ -12,5 +12,8 @@
     "@babylonjs/core": "^9.13.0",
     "@babylonjs/inspector": "^9.13.0",
     "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "babylonjs-editor-tools": "^5.4.2"
   }
 }

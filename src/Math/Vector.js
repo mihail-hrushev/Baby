@@ -1,3 +1,4 @@
+import Point from "./Point";
 
 export function newVector(x,y,z){
 
@@ -85,17 +86,11 @@ export default class Vector{
     cross(v2){
         if(v2==null) throw new Error("Vector required, provided undefined")
 
-        console.log("Cross this:")
-        console.log(this);
-        console.log("Cross with that:");
-        console.log(v2);
         const dx = this.Y * v2.Z - v2.Y * this.Z;
         const dy = (this.X * v2.Z - v2.X * this.Z) * -1;
         const dz = this.X * v2.Y - this.Y * v2.X;
         const vec = newVector(dx, dy, dz)
 
-        console.log("Cross product")
-        console.log(vec);
         return vec;
     }
 
@@ -132,6 +127,11 @@ export default class Vector{
         return vec;
     }
 
+    length(){
+        const gp = this.X*this.X+this.Y*this.Y+this.Z*this.Z; 
+        return Math.sqrt(gp);
+    }
+
     clone(){
         return newVector(this.X, this.Y, this.Z);
     }
@@ -149,6 +149,15 @@ export default class Vector{
             return true;
         }
         return false;
+    }
+
+    /**
+     * 
+     * 
+     * @returns {Point}
+     */
+    toPoint(){
+        return new Point(this.X, this.Y, this.Z);
     }
 
 }
