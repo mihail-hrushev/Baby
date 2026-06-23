@@ -1,6 +1,5 @@
 import * as Babylon from "@babylonjs/core"
 
-import CustomMesh from "./Geometry/customMesh";
 import Vector from "./Math/Vector";
 import {newVector} from "./Math/Vector";
 import Beam from "./Structures/Beam";
@@ -18,7 +17,12 @@ const engine = new Babylon.Engine(canvas);
 const createScene = async function() {
   const scene = new Babylon.Scene(engine);
 
-  scene.createDefaultCameraOrLight(true, false, true);
+  //const camera = new Babylon.ArcRotateCamera("Camera",0,10,20,new Babylon.Vector3(0,0,0), scene) ; 
+  const camera = new Babylon.ArcRotateCamera("Camera", 1,1,20,new Babylon.Vector3(0,0,0), scene) ; 
+  camera.attachControl(); 
+
+  scene.createDefaultLight();
+  
 
   //const box = new Babylon.MeshBuilder.CreateBox('myBox', {size:0.1}); 
 
@@ -32,19 +36,31 @@ const createScene = async function() {
   //const beam = Beam(scene, newVector(0,0,0), newVector(10,0,0), 5, 5); 
 
   _meshBuilder.SetScene(scene);
-
+ 
   const poly = new PolyBeam([new Point(0,0,0), 
-                            new Point(1,0,5), 
-                            new Point(4,0,6),
-                            new Point(5,0,5)]); 
+                            new  Point(0.4,4,0), 
+                            new  Point(1,5,0), 
+                            new  Point(4,6,0),
+                            new  Point(4.8,5.5,0),
+                            new  Point(5,5,0)]); 
   poly.profileString = "PL100*10"; 
-  poly.insert(); 
+  poly.position = new Point(1,0,1);
+  poly.insert();
+
+  poly.position = new Point(5,0,1);
+  poly.insert();
+
+  poly.position = new Point(8,0,1);
+  poly.insert();
 
   const beam = new Beam(new Vector(0,0,0), newVector(10,0,0));
   beam.profileString = "PL100*10"; 
   //beam.insert(); 
 
   scene.registerBeforeRender(function(){
+
+    camera.alpha +=0.005;
+    //_meshBuilder.MeshCollection[0].rotation.y+=0.01; 
     // custom.position.x+=0.01;
     // if(custom.position.x>10) custom.position.x = 0;
     //   custom.rotation.x +=0.01; 

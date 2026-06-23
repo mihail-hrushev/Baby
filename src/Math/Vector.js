@@ -32,10 +32,12 @@ export default class Vector{
         return newVector(0,0,1);
     }
 
-    constructor(){
-        this.X = 0; 
-        this.Y = 0; 
-        this.Z = 0; 
+    constructor(x=0,y=0,z=0){
+
+        
+        this.X = x; 
+        this.Y = y; 
+        this.Z = z; 
     }
 
     /**
@@ -96,9 +98,9 @@ export default class Vector{
 
     dot(vector)
     {
-        const xx = X * vector.X;
-        const yy = Y * vector.Y;
-        const zz = Z * vector.Z;
+        const xx = this.X * vector.X;
+        const yy = this.Y * vector.Y;
+        const zz = this.Z * vector.Z;
 
         return xx + yy + zz;
     }
@@ -110,20 +112,12 @@ export default class Vector{
     normalize()
     {
         var gp = this.X * this.X + this.Y * this.Y + this.Z * this.Z;
-
-        console.log(this);
-        console.log(gp);
-
         if (gp === 1) return newVector(this.X,this.Y,this.Z);
         var gp = Math.sqrt(gp);
         const x = this.X / gp;
         const y = this.Y / gp;
         const z = this.Z / gp;
-
         const vec = newVector(x,y,z);
-
-        console.log("normalize result");
-        console.log(vec);
         return vec;
     }
 

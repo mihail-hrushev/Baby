@@ -17,20 +17,20 @@ export default class Plane {
     /**
      * 
      * @param {Point} linePoint 
-     * @param {Vector} lineDirection 
+     * @param {Vector} projVector 
      * @returns 
      */
     ProjectPointOnPlaneByVector( linePoint, 
-        lineDirection)
+        projVector)
     {
-        const cosBtwNormalAndDirecton = this.normal.dot(lineDirection.normalize());
+        const cosBtwNormalAndDirecton = this.normal.dot(projVector.normalize());
 
         if (cosBtwNormalAndDirecton == 0)
         {
             return null; //perpendicular to vector, no intersection possible. 
         }
 
-        const linePointV = point.toVector();
+        const linePointV = linePoint.toVector();
 
         const cosinePlatePoint = this.normal.dot(this.point.toVector());
         const cosineLinePoint = this.normal.dot(linePointV);
@@ -39,12 +39,12 @@ export default class Plane {
         const distanceFromPointToPlaneInLineDirection = LenghtOfPerpendicularBtwPlaneAndPoint / cosBtwNormalAndDirecton;
 
         const PointAtPlane = linePointV.plus(
-                                            lineDirection.normalize()
+                                            projVector.normalize()
                                             .scale(distanceFromPointToPlaneInLineDirection)
                               ).toPoint();
-        const planeNormal = ProjectVectorOnPlane(linePoint.normal, lineDirection);
+        const planeNormal = this.ProjectVectorOnPlane(linePoint, projVector);
 
-        return new PointWithNormal(PointAtPlane, planeNormal);
+        return PointAtPlane;
     }
 
     /**
@@ -55,17 +55,18 @@ export default class Plane {
      */
     ProjectVectorOnPlane(vectorToProject, lineDirection)
     {
-        if (this.normal.Dot(lineDirection.Normalize()) == 0)
+        if (this.normal.dot(lineDirection.normalize()) == 0)
         {
             return null;
         }
-        const vv = new Vector(  PlanePoint.X + vectorToProject.X,
-                                PlanePoint.Y + vectorToProject.Y,
-                                PlanePoint.Z + vectorToProject.Z);
-        const d1 = Normal.Dot(PlanePoint.ToVector()) - Normal.Dot(vv);
-        const delimetr = Normal.Dot(lineDirection.Normalize());
+        const vv = new Vector(  this.point.X + vectorToProject.X,
+                                this.point.Y + vectorToProject.Y,
+                                this.point.Z + vectorToProject.Z);
+        const d1 = this.normal.dot(this.point.toVector()) - this.normal.dot(vv);
+        const delimetr = this.normal.dot(lineDirection.normalize());
         const t = d1 / delimetr;
-        const projected = vectorToProject.plus(lineDirection.normalize().scale(t));
+        console.log("vv:",vectorToProject);
+        const projected = vectorToProject.toVector().plus(lineDirection.normalize().scale(t));
         return projected; 
     }
 }

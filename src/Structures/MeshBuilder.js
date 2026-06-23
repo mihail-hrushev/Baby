@@ -31,13 +31,17 @@ export class MeshBuilder{
     
         var customMesh = new BABYLON.Mesh(Beam.name, this.scene);
 
+        this.MeshCollection = []; 
+        this.MeshCollection.push(customMesh);
+
         const profile = Beam.genProfileH(1,1,0.1,0.1); 
 
         const ppos = [];
         const indices = [];
         const normals = [];
 
-        polyBeam.ForeEachSection((start, end)=>{
+            let k = 0; 
+        polyBeam.ForeEachSectionWithPlanes((start, end, pln1, pln2)=>{
 
             console.log("PolyBeam Section 1")
             const len = end.toVector().minus(start).length();
@@ -52,15 +56,18 @@ export class MeshBuilder{
             
             var ps = cs.LocalToGlobalPointArray(profile); 
             var pe = cs2.LocalToGlobalPointArray(profile);
-                console.log("ps",ps);
 
-
-            let k = 0; 
             this.foreachQuad(ps, pe, (p1, p2, p3, p4)=>{        
 
                 console.log(ps, pe);
                 console.log([p1, p2, p3, p4])
-                p1.inArray(ppos); p2.inArray(ppos); p3.inArray(ppos); p4.inArray(ppos);
+
+                pln1.ProjectPointOnPlaneByVector(p1,vx).inArray(ppos); 
+                pln1.ProjectPointOnPlaneByVector(p2,vx).inArray(ppos); 
+                pln2.ProjectPointOnPlaneByVector(p3,vx).inArray(ppos); 
+                pln2.ProjectPointOnPlaneByVector(p4,vx).inArray(ppos); 
+
+                //p1.inArray(ppos); p2.inArray(ppos); p3.inArray(ppos); p4.inArray(ppos);
                 indices.push(k, k+2, k+1); 
                 indices.push(k, k+3, k+2); 
                 k+=4;
@@ -83,6 +90,9 @@ export class MeshBuilder{
         customMesh.material = customMat; 
         vertexData.applyToMesh(customMesh);
     
+        customMesh.position.x = polyBeam.position.X; 
+        customMesh.position.y = polyBeam.position.Y; 
+        customMesh.position.z = polyBeam.position.Z; 
         return customMesh;
     }
 
