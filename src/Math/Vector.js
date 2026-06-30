@@ -64,13 +64,25 @@ export default class Vector{
 
     /**
      * 
-     * @param {Vector} Vector 
+     * @param {Vector} vector 
      * @returns {Vector}
      */
-    minus(Vector){
-        const x = this.X-Vector.X; 
-        const y = this.Y-Vector.Y; 
-        const z = this.Z-Vector.Z; 
+    minus(vector){
+        const x = this.X-vector.X; 
+        const y = this.Y-vector.Y; 
+        const z = this.Z-vector.Z; 
+        return newVector(x,y,z);
+    }
+
+    /**
+     * 
+     * @param {Point} point 
+     * @returns {Vector}
+     */
+    minusP(point){
+        const x = this.X-point.X; 
+        const y = this.Y-point.Y; 
+        const z = this.Z-point.Z; 
         return newVector(x,y,z);
     }
 
