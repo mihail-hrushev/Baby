@@ -3,8 +3,14 @@ import Vector from "../Math/Vector";
 import _meshBuilder from "./MeshBuilder";
 import UCS from "../Math/UCS";
 import Point from "../Math/Point";
+import PolyBeam from "./PolyBeam";
 
 export default class HalfArch{
+
+
+
+    /**@type {Point[]} */
+    points
 
     /**
      * 
@@ -14,10 +20,19 @@ export default class HalfArch{
      */
     constructor(start, end, angle){
 
+        this.points = []; 
+        this.points.push(start.toPoint()); 
+        this.points.push(end.toPoint()); 
+
     }
 
     insert(){
-        _meshBuilder.PolyBeamToMesh()
+
+
+
+        const pp = new PolyBeam(this.points)
+        pp.position = new Point(0,0,0);
+        _meshBuilder.PolyBeamToMesh(pp);
     }
 
     /**

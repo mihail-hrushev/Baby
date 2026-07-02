@@ -6,6 +6,7 @@ import Beam from "./Structures/Beam";
 import _meshBuilder from "./Structures/MeshBuilder";
 import PolyBeam from "./Structures/PolyBeam";
 import Point from "./Math/Point";
+import HalfArch from "./Structures/HalfArch";
 
 
 /// base on this tutorial https://www.youtube.com/watch?v=e6EkrLr8g_o
@@ -52,6 +53,9 @@ const createScene = async function() {
 
   poly.position = new Point(8,0,1);
   poly.insert();
+
+  const half = new HalfArch(newVector(0,0,0), newVector(5,7,0), 5); 
+  half.insert(); 
 
   const beam = new Beam(new Vector(0,0,0), newVector(10,0,0));
   beam.profileString = "PL100*10"; 
