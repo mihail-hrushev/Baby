@@ -11,54 +11,42 @@ export default class HalfArch{
 
     /**@type {Point[]} */
     points
+    pointsNorm; 
 
     /**
      * 
      * @param {Vector} start 
      * @param {Vector} end 
-     * @param {number} angle 
+     * @param {Vector} angle 
      */
-    constructor(start, end, angle){
+    constructor(start, end, tangentVector){
 
         this.points = []; 
-        this.points.push(start.toPoint()); 
-        this.points.push(end.toPoint()); 
+        this.pointsNorm = []; 
+        this.start = start; 
+        this.end = end;
 
+        const mv = start.vectorTo(end);
+        const vy = tangentVector.normalize();
+        const vz = mv.crossN(vy); 
+        const vx = vy.crossN(vz); 
+        this.cs  = new UCS(start.toPoint(), vx, vy, vz);
+        const pe = this.cs.GlobalToLocal(end.toPoint());
+
+        this.flatPoints = this.vertical(pe, 1, 0);
+
+        this.position = start.toPoint(); ;
+
+        this.points = this.cs.LocalToGlobalAligArray(this.flatPoints);
+
+        //this.points.push(start.toPoint()); 
+        //this.points.push(end.toPoint()); 
     }
 
     insert(){
-
-
-
         const pp = new PolyBeam(this.points)
-        pp.position = new Point(0,0,0);
+        pp.position = this.position; 
         _meshBuilder.PolyBeamToMesh(pp);
-    }
-
-    /**
-     * 
-     * @param {Point} startP 
-     * @param {Vector} tangentVector 
-     * @param {Point} endP 
-     * @param {number} length 
-     * @param {number} startOffset 
-     */
-    freeHalf(startP, tangentVector, endP, length, startOffset){      
-
-        const eend = endP.toVector().minusP(startP).normalize();
-
-        const vZ = tangentVector.normalize();
-        const vY = eend.cross(vZ).normalize();
-        const vx = vY.cross(vZ).normalize();
-        const css = new UCS(start,vx,vZ, vx.cross(vZ).normalize()); 
-
-
-        const localFinalPosition = css.GlobalToLocalPoint(endP);
-        //const localFin = css.GlobalToLocal(end); 
-        const tempha = new HalfArch(new Point(0, 0, 0), localFin, length, startOffset);
-         radius = tempha.radius;
-         realCenterPoint = css.LocalToGlobal(tempha.realCenterPoint);
-         segPointList = css.LocalToGlobal(tempha.segPointList);
     }
 
      vHalfArch(start,  end, length, startOffset)
@@ -80,109 +68,79 @@ export default class HalfArch{
 
     /**
      * 
-     * @param {Point} start 
-     * @param {Point} end 
+     * @param {Vector} start 
+     * @param {Vector} end 
      * @returns {{radius:number, arcAngle:number}}
      */
     CalculateArchRadius(start, end)
     {
         //we consider that Start and end already suited for tangent (0,0,1) 
-        const mainV = end.toVector().minus(start.toVector());
+        const mainV = end.minus(start);
         const gp = mainV.length(); 
-        const cosa = mainV.Z / gp;
+        const cosa = mainV.Y / gp;
 
         //angle of arch is equal double angle of tangent triangles. 
-        const AngleOfEntireArch = Math.Acos(cosa) * 2;
+        const AngleOfEntireArch = Math.acos(cosa) * 2;
 
         //special case wen angle is 180
-        if (UCS.AlmostEqual(AngleOfEntireArch, Math.PI))
+        if (UCS.AlmostEqualNumbers(AngleOfEntireArch, Math.PI))
             return {radius:gp / 2, arcAngle:AngleOfEntireArch};
         
         //usual case, cause gp*sin = MainV.Z, we can divide to get GP, which is radius
-        return {radius:mainV.Z / Math.Sin(AngleOfEntireArch), arcAngle:AngleOfEntireArch};
+        return {radius:mainV.Y / Math.sin(AngleOfEntireArch), arcAngle:AngleOfEntireArch};
     }
 
-    vertical(segmentLength, startOffset)
+    vertical(endp, segmentLength, startOffset)
     {
-        this.InitializeVariables();
-        const {radius, arcAngle} = this.CalculateArchRadius(this.startP, this.endP);
+        //this.InitializeVariables();
+        const {radius, arcAngle} = this.CalculateArchRadius(new Vector(0,0,0), endp.toVector());
 
         let startAngle = 0;
 
         if (startOffset > 0)
         {
             const sinOfHalfOffsetSegmentAngle = (startOffset / 2) / radius;
-            startAngle = Math.Asin(sinOfHalfOffsetSegmentAngle) * 2;
+            startAngle = Math.asin(sinOfHalfOffsetSegmentAngle) * 2;
         }
 
         const sinOfHalfSegmentByLenghtAngle = (segmentLength / 2) / radius;
 
-        const SegmentAngle = Math.Asin(sinOfHalfSegmentByLenghtAngle) * 2;
+        const SegmentAngle = Math.asin(sinOfHalfSegmentByLenghtAngle) * 2;
 
         //double ang = AngleOfEntireArch / segments; //entire arch divide by segments
 
-        directionXY = ucs.VectorXY;
-        realCenterPoint = new Point(startPoint.X + radius * directionXY.X,
-                                    startPoint.Y + radius * directionXY.Y,
-                                    startPoint.Z);
-        flatCenterPoint = new Point(-radius, 0, 0);
+        
+        const realCenterPoint = new Point(radius,
+                                    0,
+                                    radius);
         //double ang = startAngle;
         const generate = true;
         let i = 0;
+
+        this.points.push(new Point(0,0,0)); 
+
         while (true)
         {
-            const stAng = 0;
-            const enAng = 0;
-
-            if (createFirstSegment && i == 0)
+            i++;
+            const enAng = startAngle + SegmentAngle * (i);
+          
+            if (enAng > arcAngle)
             {
-                stAng = 0;
-                enAng = startAngle;
-                i++;
-            }
-            else
-            {
-                stAng = startAngle + SegmentAngle * i - 1;
-                enAng = startAngle + SegmentAngle * (i);
-                i++;
+                this.points.push(endp.toPoint());                
+                return this.points;                
             }
 
-            if (enAng > AngleOfEntireArch)
-            {
-                segPointList.Add(this.endPoint);
-                segPointNorm.Add(UCS.PWN(startPoint, ucs.vZ.Opposit()));
+            const enCos = -Math.cos(enAng); 
+            const enSin = Math.sin(enAng); 
 
-                var tfe = new Point(radius * Math.Cos(AngleOfEntireArch) - radius,
-                                        0,
-                                        radius * Math.Sin(AngleOfEntireArch));
-                flatPoints.Add(tfe);
+            const ex = radius * enCos+radius;
+            const ey = radius * enSin;
+            const ez = 0;
 
-                segPointListReverse.Add(this.endPoint);
-                break;
-            }
-
-            const sx = ucs.nVectorXY.X * radius * Math.Cos(stAng) + startPoint.X + ucs.VectorXY.X * radius;
-            const sy = ucs.nVectorXY.Y * radius * Math.Cos(stAng) + startPoint.Y + ucs.VectorXY.Y * radius;
-            const sz = Math.Sin(stAng) * radius + startPoint.Z;
-
-            const ex = ucs.nVectorXY.X * radius * Math.Cos(enAng) + startPoint.X + ucs.VectorXY.X * radius;
-            const ey = ucs.nVectorXY.Y * radius * Math.Cos(enAng) + startPoint.Y + ucs.VectorXY.Y * radius;
-            const ez = Math.Sin(enAng) * radius + startPoint.Z;
-
-            const sp = new Point(sx, sy, sz);
+            //const sp = new Point(sx, sy, sz);
             const ep = new Point(ex, ey, ez);
-            segPointList.Add(ep);
-            segPointListReverse.Add(ep);
-            segPointNorm.Add(UCS.PWN(ep, new Vector(realCenterPoint, ep)));
-            //TODO - FIX FLAT POINTS
-
-            const fx = ucs.nVectorXY.X * radius * Math.Cos(enAng) + ucs.VectorXY.X * radius;
-
-            const fse = new Point(radius * Math.Cos(enAng) - radius, 0, radius * Math.Sin(enAng));
-            flatPoints.Add(fse);
+            this.points.push(ep); 
+            this.pointsNorm.push( new Vector(enCos, enSin));
         }
-
-        segPointListReverse.Reverse();
-
     }
 }

@@ -22,6 +22,10 @@ export default class Point{
         //console.log(array);
     }
 
+    toPoint(){
+        return this; 
+    }
+
     /**
      * convert to Vector
      * @returns {Vector}

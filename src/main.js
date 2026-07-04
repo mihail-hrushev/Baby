@@ -19,7 +19,7 @@ const createScene = async function() {
   const scene = new Babylon.Scene(engine);
 
   //const camera = new Babylon.ArcRotateCamera("Camera",0,10,20,new Babylon.Vector3(0,0,0), scene) ; 
-  const camera = new Babylon.ArcRotateCamera("Camera", 1,1,20,new Babylon.Vector3(0,0,0), scene) ; 
+  const camera = new Babylon.ArcRotateCamera("Camera", 1,1,50,new Babylon.Vector3(0,0,0), scene) ; 
   camera.attachControl(); 
 
   scene.createDefaultLight();
@@ -38,26 +38,64 @@ const createScene = async function() {
 
   _meshBuilder.SetScene(scene);
  
-  const poly = new PolyBeam([new Point(0,0,0), 
-                            new  Point(0.4,4,0), 
-                            new  Point(1,5,0), 
-                            new  Point(4,6,0),
-                            new  Point(4.8,5.5,0),
-                            new  Point(5,5,0)]); 
-  poly.profileString = "PL100*10"; 
-  poly.position = new Point(1,0,1);
-  poly.insert();
+  // const poly = new PolyBeam([new Point(0,0,0), 
+  //                           new  Point(0.4,4,0), 
+  //                           new  Point(1,5,0), 
+  //                           new  Point(4,6,0),
+  //                           new  Point(4.8,5.5,0),
+  //                           new  Point(5,5,0)]); 
+  // poly.profileString = "PL100*10"; 
+  // poly.position = new Point(1,0,1);
+  // poly.insert();
 
-  poly.position = new Point(5,0,1);
-  poly.insert();
+  // poly.position = new Point(5,0,1);
+  // poly.insert();
 
-  poly.position = new Point(8,0,1);
-  poly.insert();
+  // poly.position = new Point(8,0,1);
+  // poly.insert();
 
-  const half = new HalfArch(newVector(0,0,0), newVector(5,7,0), 5); 
+  const beam2 = new Beam(new Vector(0,0,0),
+                         new Vector(0,10,0)); 
+  beam2.profileString = "PL1*1"; 
+  beam2.insert(); 
+
+  
+  const beam3 = new Beam(new Vector(0,10,0), 
+                         new Vector(10,7,0)).insert(); 
+
+  const beam4 = new Beam(new Vector(0,0,0), 
+                         new Vector(2,0,0)).insert(); 
+
+  const half = new HalfArch( newVector(2,0,0), 
+                             newVector(10,7,0), newVector(0,1,0)); 
   half.insert(); 
 
-  const beam = new Beam(new Vector(0,0,0), newVector(10,0,0));
+    const half2 = new HalfArch( newVector(0,0,0), 
+                             newVector(5,7,5), newVector(0,1,0)); 
+  half2.insert(); 
+
+    const half3 = new HalfArch( newVector(0,0,0), 
+                             newVector(-5,7,0), newVector(0,1,0)); 
+  half3.insert(); 
+
+
+    const half4 = new HalfArch( newVector(0,0,0), 
+                             newVector(-5,7,5), newVector(0,1,0)); 
+  half4.insert(); 
+
+    const half5 = new HalfArch( newVector(0,0,0), 
+                             newVector(-5,7,-5), newVector(0,1,0)).insert(); 
+
+    const half6 = new HalfArch( newVector(0,0,0), 
+                             newVector(0,7,5), newVector(0,1,0)).insert(); 
+    const half7 = new HalfArch( newVector(0,0,0), 
+                             newVector(0,7,-5), newVector(0,1,0)).insert();                              
+
+
+
+
+  const beam = new Beam(new Vector(0,0,0), 
+  newVector(10,0,0));
   beam.profileString = "PL100*10"; 
   //beam.insert(); 
 

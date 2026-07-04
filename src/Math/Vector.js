@@ -25,11 +25,25 @@ export default class Vector{
         vec.X = x; 
         vec.Y = y; 
         vec.Z = z; 
-        return vec;         
+        return vec;       
+
+    }
+
+
+    vectorTo(otherV){
+        return otherV.toVector().minus(this);
     }
 
     static VZ(){
         return newVector(0,0,1);
+    }
+    
+    static VY(){
+        return newVector(0,1,0);
+    }
+
+    static VX(){
+        return newVector(1,0,0);
     }
 
     constructor(x=0,y=0,z=0){
@@ -108,6 +122,22 @@ export default class Vector{
         return vec;
     }
 
+    /**
+     * Vector output is normalized;
+     * @param {Vector} v2 
+     * @returns {Vector}
+     */
+    crossN(v2){
+        if(v2==null) throw new Error("Vector required, provided undefined")
+
+        const dx = this.Y * v2.Z - v2.Y * this.Z;
+        const dy = (this.X * v2.Z - v2.X * this.Z) * -1;
+        const dz = this.X * v2.Y - this.Y * v2.X;
+        const vec = newVector(dx, dy, dz).normalize(); 
+
+        return vec;
+    }
+
     dot(vector)
     {
         const xx = this.X * vector.X;
@@ -164,6 +194,10 @@ export default class Vector{
      */
     toPoint(){
         return new Point(this.X, this.Y, this.Z);
+    }
+
+    toVector(){
+        return this;
     }
 
 }

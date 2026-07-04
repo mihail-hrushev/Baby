@@ -29,7 +29,7 @@ export class MeshBuilder{
      */
     PolyBeamToMesh(polyBeam){
     
-        var customMesh = new BABYLON.Mesh(Beam.name, this.scene);
+        const customMesh = new BABYLON.Mesh(Beam.name, this.scene);
 
         this.MeshCollection = []; 
         this.MeshCollection.push(customMesh);
@@ -43,14 +43,10 @@ export class MeshBuilder{
             let k = 0; 
         polyBeam.ForeEachSectionWithPlanes((start, end, pln1, pln2)=>{
 
-            console.log("PolyBeam Section 1")
-            const len = end.toVector().minus(start).length();
+            const vx = start.toVector().vectorTo(end).normalize();
+            const vy = Vector.VY().crossN(vx);
+            const vz = vx.crossN(vy);
 
-            const vx = end.toVector().minus(start).normalize();
-            const vy = Vector.VZ().cross(vx).normalize();
-            const vz = vx.cross(vy).normalize();
-
-            console.log(vx, vy, vz);
             const cs = new UCS(start, vx, vy, vz); 
             const cs2 = new UCS(end, vx, vy, vz); 
             
@@ -58,9 +54,6 @@ export class MeshBuilder{
             var pe = cs2.LocalToGlobalPointArray(profile);
 
             this.foreachQuad(ps, pe, (p1, p2, p3, p4)=>{        
-
-                console.log(ps, pe);
-                console.log([p1, p2, p3, p4])
 
                 pln1.ProjectPointOnPlaneByVector(p1,vx).inArray(ppos); 
                 pln1.ProjectPointOnPlaneByVector(p2,vx).inArray(ppos); 
