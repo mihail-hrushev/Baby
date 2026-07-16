@@ -1,11 +1,15 @@
 import Vector, { newVector } from "./Vector";
 
-export default class Point{
+export default class nPoint{
 
-    constructor(x,y,z){
-        this.X = x; 
-        this.Y = y; 
-        this.Z = z; 
+    /**
+     * 
+     * @param {Point} point 
+     * @param {Vector} normal 
+     */
+    constructor(point, normal){
+        this.point = point; 
+        this.normal = normal;
     }
 
     /**

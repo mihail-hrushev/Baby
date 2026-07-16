@@ -176,15 +176,32 @@ export default class Vector{
 
     static AlmostEqual(Start, End, toler = 0)
     {        
-        if (toler == 0) { toler = _tolerance; }
+        if (toler == 0) { toler = Vector._tolerance; }
 
-        if (AlmostEqual(Start.X, End.X, toler) &&
-             AlmostEqual(Start.Y, End.Y, toler) &&
-             AlmostEqual(Start.Z, End.Z, toler))
+        if (Vector.AlmostEqualNumbers(Start.X, End.X, toler) &&
+             Vector.AlmostEqualNumbers(Start.Y, End.Y, toler) &&
+             Vector.AlmostEqualNumbers(Start.Z, End.Z, toler))
         {
             return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// Tolerance based equality check
+    /// </summary>
+    static AlmostEqualNumbers(a, b, toler = 0)
+    {
+        if (toler == 0) { toler = this._tolerance; }
+        var dot = Math.abs(a-b); 
+        if (dot <= toler)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**

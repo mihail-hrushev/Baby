@@ -20,7 +20,7 @@ export default class Profile{
 
 
 
-    genProfileH(width, height, flangeThick, webThick){
+    static genProfileH(width, height, flangeThick, webThick){
 
         const hwidth = width/2;
         const hheight = height/2;

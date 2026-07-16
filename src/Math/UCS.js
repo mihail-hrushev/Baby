@@ -1,4 +1,5 @@
 import Point from "./Point";
+import nPoint from "./nPoint";
 import Vector from "./Vector";
 
 /** UCS - User Defined Coordinate System */
@@ -77,6 +78,25 @@ export default class UCS{
         var yy = this.vY.dot(dx);
         var zz = this.vZ.dot(dx);
         return new Point(xx, yy, zz);
+    }
+
+    /**
+     * 
+     * @param {nPoint | nPoint[]} point 
+     */
+    GlobalToLocalNPoint(point){
+        if (Array.isArray(point)) {return GlobalToLocalNPointArray(point)}
+        
+        
+    }
+
+    GlobalToLocalNPointArray(point){
+        const result = []; 
+        point.forEach(element => {
+            result.push(element);            
+        });
+        return result; 
+        
     }
 
     toVector(gp){

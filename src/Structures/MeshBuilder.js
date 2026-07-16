@@ -28,7 +28,6 @@ export class MeshBuilder{
      * @returns 
      */
     PolyBeamToMesh(polyBeam){
-    
         const customMesh = new BABYLON.Mesh(Beam.name, this.scene);
 
         this.MeshCollection = []; 

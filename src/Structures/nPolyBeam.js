@@ -1,10 +1,11 @@
-import Point from '../Math/Point';
+import nPoint from '../Math/nPoint';
 import _meshBuilder from './MeshBuilder';
 import Plane from '../Math/Plane';
+import UCS from '../Math/UCS';
 
-export default class PolyBeam {
+export default class nPolyBeam {
 
-    /**@type {Point[]} */
+    /**@type {nPoint[]} */
     points;
     /**@type {Plane} */
     _plane;
@@ -14,7 +15,7 @@ export default class PolyBeam {
     
     /**
      * 
-     * @param {Point[]} Points 
+     * @param {nPoint[]} points 
      */
     constructor(points){    
 
@@ -69,36 +70,25 @@ export default class PolyBeam {
 
     /**
      * 
-     * @param {(start:Point, end:Point, pln1:Plane, pln2:Plane)=>void} func 
+     * @param {(start:nPoint, end:nPoint, pln1:UCS, pln2:UCS)=>void} func 
      */
     ForeEachSectionWithPlanes(func){        
 
-        let currentPlane;
-        let nextPlane;
-
-
         for(let i = 0 ; i< this.points.length-1; i++){
+            const curPoint = this.points[i];
+            const nextPoint = this.points[i+1];
+            const vX = nextPoint.point.toVector().minus(curPoint.point.toVector()).normalize();
 
-            const curPoint = this.points[i].toVector();
-            const nPoint = this.points[i+1].toVector();
-            const vX = nPoint.minus(curPoint).normalize();
+            const vy1 = curPoint.normal;
+            const vz1 = vX.cross(vy1);
+            const vx1 = vy1.normal.cross(vz1);
+            const ucs1 = new UCS(curPoint.point, vx1, vy1, vz1); 
 
-            if(i==0) {
-                currentPlane = new Plane(this.points[i], vX);
-            }
-
-            const nnPoint = this.points[i+2]==null?undefined:this.points[i+2].toVector(); 
-
-            if(typeof(nnPoint)!=="undefined"){
-                const nVX = nnPoint.minus(nPoint).normalize(); 
-                const midNorm = vX.plus(nVX).normalize();
-                nextPlane = new Plane(this.points[i+1], midNorm); 
-            } else {
-                nextPlane = new Plane(this.points[i+1], vX); 
-            }
-
-            func(this.points[i], this.points[i+1], currentPlane, nextPlane )
-            currentPlane = nextPlane; 
+            const vy2 = nextPoint.normal;
+            const vz2 = vX.cross(vy1);
+            const vx2 = vy1.normal.cross(vz1);
+            const ucs2 = new UCS(nextPoint.point, vx2, vy2, vz2);
+            func(curPoint, nextPoint, ucs1, ucs2); 
         }
     }
 

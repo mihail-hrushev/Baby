@@ -1,9 +1,10 @@
 import { MeshBuilder } from "@babylonjs/core";
-import Vector from "../Math/Vector";
+import Vector, { newVector } from "../Math/Vector";
 import _meshBuilder from "./MeshBuilder";
 import UCS from "../Math/UCS";
 import Point from "../Math/Point";
 import PolyBeam from "./PolyBeam";
+import nPoint from "../Math/nPoint";
 
 export default class HalfArch{
 
@@ -11,7 +12,11 @@ export default class HalfArch{
 
     /**@type {Point[]} */
     points
-    pointsNorm; 
+    /**@type {nPoint[]} */
+    nPoints; 
+
+    /**@type {number} */
+    segmentLength;
 
     /**
      * 
@@ -22,7 +27,7 @@ export default class HalfArch{
     constructor(start, end, tangentVector){
 
         this.points = []; 
-        this.pointsNorm = []; 
+        this.nPoints = []; 
         this.start = start; 
         this.end = end;
 
@@ -31,19 +36,38 @@ export default class HalfArch{
         const vz = mv.crossN(vy); 
         const vx = vy.crossN(vz); 
         this.cs  = new UCS(start.toPoint(), vx, vy, vz);
-        const pe = this.cs.GlobalToLocal(end.toPoint());
 
-        this.flatPoints = this.vertical(pe, 1, 0);
-
-        this.position = start.toPoint(); ;
-
-        this.points = this.cs.LocalToGlobalAligArray(this.flatPoints);
 
         //this.points.push(start.toPoint()); 
         //this.points.push(end.toPoint()); 
     }
 
+    /**
+     * 
+     * @returns {Point[]}
+     */
+    getPoints(){
+        
+        const pe = this.cs.GlobalToLocal(this.end.toPoint());
+
+        this.flatPoints = this.vertical(pe,this.segmentLength, 0);
+
+        this.position = this.start.toPoint(); ;
+
+        const result = this.cs.LocalToGlobalPointArray(this.flatPoints);
+        return result; 
+    }
+
     insert(){
+
+        const pe = this.cs.GlobalToLocal(this.end.toPoint());
+
+        this.flatPoints = this.vertical(pe,this.segmentLength, 0);
+
+        this.position = this.start.toPoint();
+
+        this.points = this.cs.LocalToGlobalAligArray(this.flatPoints);
+
         const pp = new PolyBeam(this.points)
         pp.position = this.position; 
         _meshBuilder.PolyBeamToMesh(pp);
@@ -104,21 +128,13 @@ export default class HalfArch{
         }
 
         const sinOfHalfSegmentByLenghtAngle = (segmentLength / 2) / radius;
-
         const SegmentAngle = Math.asin(sinOfHalfSegmentByLenghtAngle) * 2;
-
-        //double ang = AngleOfEntireArch / segments; //entire arch divide by segments
-
-        
-        const realCenterPoint = new Point(radius,
-                                    0,
-                                    radius);
-        //double ang = startAngle;
-        const generate = true;
-        let i = 0;
-
+    
+        const realCenterPoint = new Point(radius,0,0);
+    
         this.points.push(new Point(0,0,0)); 
-
+        this.nPoints.push(new nPoint(new Point(0,0,0), newVector(1,0,0)));
+        let i = 0;
         while (true)
         {
             i++;
@@ -126,8 +142,9 @@ export default class HalfArch{
           
             if (enAng > arcAngle)
             {
-                this.points.push(endp.toPoint());                
-                return this.points;                
+                this.points.push(endp.toPoint());
+                this.nPoints.push(endp.toPoint(),);
+                return this.points;
             }
 
             const enCos = -Math.cos(enAng); 
@@ -140,7 +157,7 @@ export default class HalfArch{
             //const sp = new Point(sx, sy, sz);
             const ep = new Point(ex, ey, ez);
             this.points.push(ep); 
-            this.pointsNorm.push( new Vector(enCos, enSin));
+            this.nPoints.push(new nPoint(ep, new Vector(enCos, enSin,0)));
         }
     }
 }

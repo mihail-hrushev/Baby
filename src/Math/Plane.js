@@ -16,13 +16,23 @@ export default class Plane {
 
     /**
      * 
-     * @param {Point} linePoint 
+     * @param {Point|Point[]} linePoint 
      * @param {Vector} projVector 
      * @returns 
      */
-    ProjectPointOnPlaneByVector( linePoint, 
-        projVector)
+    ProjectPointOnPlaneByVector(linePoint, projVector)
     {
+        if(Array.isArray(linePoint)){
+            const result = []; 
+            for(let i =0; i<linePoint.length; i++){
+                result.push(this._ProjectPointOnPlane(linePoint[i], projVector));
+            }
+            return result; 
+        }
+        return this._ProjectPointOnPlane(linePoint, projVector); 
+    }
+
+    _ProjectPointOnPlane(linePoint, projVector){
         const cosBtwNormalAndDirecton = this.normal.dot(projVector.normalize());
 
         if (cosBtwNormalAndDirecton == 0)
@@ -65,7 +75,6 @@ export default class Plane {
         const d1 = this.normal.dot(this.point.toVector()) - this.normal.dot(vv);
         const delimetr = this.normal.dot(lineDirection.normalize());
         const t = d1 / delimetr;
-        console.log("vv:",vectorToProject);
         const projected = vectorToProject.toVector().plus(lineDirection.normalize().scale(t));
         return projected; 
     }
